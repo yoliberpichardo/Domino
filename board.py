@@ -19,7 +19,7 @@ class Board:
                 tab = Domino(x,y)
                 if len(self.tab_list) == 0 or self.search(tab) == False : 
                     self.tab_list.append(tab) 
-                    # print(tab.draw_tab())
+                # print(tab.draw_tab())
         return self.tab_list
     
     def random_tokens(self):
@@ -29,15 +29,27 @@ class Board:
             for r in range(7):
                 token = choice(self.tab_list)
                 if len(list_player.tokens_p1) <  7:
-                    list_player.tokens_p1.append(token)
+                    list_player.tokens_p1.append(token.draw_tab())
+                    print(token.draw_tab())
+                    self.tab_list.remove(token)
+                    token = ''
                 elif len(list_player.tokens_p2) <  7:
-                    list_player.tokens_p2.append(token)
+                    list_player.tokens_p2.append(token.draw_tab())
+                    print(token.draw_tab())
+                    self.tab_list.remove(token)
+                    token = ''
                 elif len(list_player.tokens_p3) <  7:
-                    list_player.tokens_p3.append(token)
+                    list_player.tokens_p3.append(token.draw_tab())
+                    print(token.draw_tab())
+                    self.tab_list.remove(token)
+                    token = ''
                 elif len(list_player.tokens_p4) <  7:
-                    list_player.tokens_p4.append(token)
+                    list_player.tokens_p4.append(token.draw_tab())
+                    print(token.draw_tab())
+                    self.tab_list.remove(token)
+                    token = ''
                 
-        return list_player.tokens_p1,list_player.tokens_p2,list_player.tokens_p3,list_player.tokens_p4
+        return list_player.tokens_p1, list_player.tokens_p2, list_player.tokens_p3, list_player.tokens_p4
             
                 
                 
