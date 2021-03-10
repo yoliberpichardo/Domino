@@ -6,10 +6,7 @@ class Domino:
     def draw_tab(self):
         return "[{}|{}]".format(self.v1,self.v2)
         
-
-        
-    
-                
+  
         
         
 

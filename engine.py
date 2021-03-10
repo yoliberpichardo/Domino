@@ -1,9 +1,9 @@
 from Board import *
 class Engine:
-    exit_game = False
+    def __init__(self):
+        self.exit_game = False
+        self.maximum_score = 0
     def run(self):
         while exit_game == False:
-            finish_game = False
-            while finish_game == False:
-                
+            while True:
                 
