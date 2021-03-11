@@ -118,7 +118,6 @@ class Board:
                         self.table.append(search_in_search)
                         search_in_turn.remove(search_in_search)
                         cont += 1
-                        # print(search_in_turn)
                     else:
                         system('cls')
                         print('just enter a correct address is left "L" or right "R"')     
