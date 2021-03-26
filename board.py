@@ -14,10 +14,11 @@ class Board:
         self.table = []
         self.turn = []
         self.input_domi = ''
-        
-        
-        
-        
+        self.search_in_turn = ''
+        self.index_v = []
+        self.token_inv = ''
+        self.token_turn = ''
+           
     def search(self,tab): #funcion para que no guarde fichas repetidas en la lista
         for i in range(len(self.tab_list)): 
             if self.tab_list[i].v1 == tab.v2 and self.tab_list[i].v2 == tab.v1: 
@@ -86,55 +87,115 @@ class Board:
             if int(travels[1]) + int(travels[3]) == 12:
                 return travels
         return False    
+    
+    # def a_shift_change(self):
+    #     while looking in range(4):
       
-    def shift_change(self): 
+    def shift_change(self): # funcion para cambio de turno
         self.creator_tokens()
         self.random_tokens()
         self.assign_shifts()
-        cont = range(4) 
-        for search_in_turn in self.turn:#turn[p1,p2,p3,p4]
-            for search_in_search in search_in_turn:#p2[[3|6],[0|2],[2|4]]
-                if len(self.table) == 0:
-                    system('cls')
-                    # display_player = "player{} ->".format(1)
-                    print('table',self.table)
-                    print("player{} ->".format(1),search_in_turn)
-                    if self.return_token6(search_in_turn) == search_in_search:
-                        self.table.append(search_in_search)
-                        search_in_turn.remove(search_in_search)
-                        # print(search_in_turn)
-                elif len(self.table) > 0:
-                    system('cls')
-                    print(search_in_turn)
-                    print('table: ',self.table)
-                    print("player{} ->".format(cont),search_in_turn)
-                    input_direccion = str(input('enter the address of the card: ').upper())
-                    if input_direccion == 'L':
-                        self.table.insert(0,search_in_search)
-                        search_in_turn.remove(search_in_search)
-                        cont += 1
-                        print(search_in_turn)
-                    elif input_direccion == 'R':
-                        self.table.append(search_in_search)
-                        search_in_turn.remove(search_in_search)
-                        cont += 1
-                    else:
-                        system('cls')
-                        print('just enter a correct address is left "L" or right "R"')     
-                    
-                    
-
+        for self.search_in_turn in self.turn:
+            if len(self.table) == 0:
+                toke6 = self.return_token6(self.search_in_turn)
+                if self.return_token6(self.search_in_turn):
+                    self.table.append(toke6)
+                    self.search_in_turn.remove(toke6)
+                    print(self.search_in_turn)
+            elif len(self.table) > 0:
+                print('table',self.table)
+                print(self.search_in_turn)
+                self.direccion()
             
+    
+    def direccion(self):# funcion para poner la ficha en la direccion correcta
+        enter_index = int(input('enter the index of the file to choose:'))
+        for  checks_turn in self.turn:
+            for checks_table in self.table:
+                self.index_v.append(checks_turn[enter_index])
+                print(self.index_v[0])
+                input_direccion = str(input('enter the address of the card: ').upper())
+                if input_direccion == 'L':
+                    if len(self.table) > 0:
+                        if self.index_v[0][1] == checks_table[1] or self.index_v[0][3] == checks_table[1]:
+                            if self.index_check_left(self.index_v,self.table):
+                                self.table.insert(0,self.index_check_left(self.index_v,self.table))
+                                self.index_v.pop()
+                                return self.table
+                        else:
+                            # system('cls')
+                            print('enter the index again that date does not match the table')
+                            self.index_v.pop()
+                            self.direccion()
+                            enter_index = int(input('enter the index of the file to choose:'))
+                            
+                elif input_direccion == 'R':
+                    if len(self.table) > 0:
+                        if self.index_v[0][1] == checks_table[3] or self.index_v[0][3] == checks_table[3]:
+                            if self.index_check_right(self.index_v,self.table):
+                                self.table.append(self.index_check_right(self.index_v,self.table))
+                                self.index_v.pop()
+                                return self.table
+                                
+                        else:
+                            # system('cls')
+                            print('enter the index again that date does not match the table')
+                            self.index_v.pop()
+                            self.direccion()
+                            enter_index = int(input('enter the index of the file to choose:'))
                 
+                else:
+                    # system('cls')
+                    print('enter the index again that date does not match the table')
+                    self.direccion()
+                    
+    def  index_check_right(self,index_v,table): # funcion de chequeo de la posicion derecha
+        for rec_table in table:
+            for rec_turn in self.index_v:
+                if self.index_v[0][1] == self.table[-1][3]:
+                    return self.index_v[0]
+                elif self.index_v[0][3] == self.table[-1][3]:
+                    self.invest_token(self.index_v)
+                    return self.index_v[0]
+                    
                 
-    # def choose_cards(self): 
-    #     cont = 4
-    #     while cont > 0:
-    #         self.shift_change()
-    #         cont -= 1
-        
+    def  index_check_left(self,index_v,table): # funcion de chequeo de la posicion izquierda
+        for rec_table in table:
+            for rec_turn in self.index_v:
+                if self.index_v[0][1] == self.table[0][1]:
+                    self.invest_token(self.index_v)
+                    return self.index_v[0]
+                elif self.index_v[0][3] == self.table[0][1]:
+                    return self.index_v[0]
                            
+    def invest_token(self,index_v):# funcion para invertir los indices de las fichas
+        index_3 = 0
+        index_1 = 0
+        token_1 = ''
+        for num1 in self.index_v:
+            for num2 in num1:
+                if num1[0] == num2:
+                    index_3 = num1[1]
+                    index_1 = num1[3] 
+                    token_1 = '[{}|{}]'.format(index_1,index_3)
+                self.index_v.pop()
+                self.index_v.append(token_1)  
+                return self.index_v
+        
+                                 
 domi = Board()   
 print(domi.shift_change())
+
+# turn = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]
+
+# def turn_ch(turn):
+#     for search in turn:
+#         print(search)
+#         for se_search in search:
+#             print(se_search)
+        
+            
+# turn_ch(turn)
+
 
 
