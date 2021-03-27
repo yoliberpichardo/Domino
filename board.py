@@ -10,14 +10,14 @@ class Board:
     def __init__(self):
         self.tab_list = []
         self.token = ''
-        self.player = ''
-        self.table = []
+        self.table = ['']
         self.turn = []
-        self.input_domi = ''
-        self.search_in_turn = ''
         self.index_v = []
-        self.token_inv = ''
-        self.token_turn = ''
+        self.checks_turn = ''
+        self.enter_index = ''
+        self.input_direccion = ''
+        self.status = False
+        
            
     def search(self,tab): #funcion para que no guarde fichas repetidas en la lista
         for i in range(len(self.tab_list)): 
@@ -88,67 +88,23 @@ class Board:
                 return travels
         return False    
     
-    # def a_shift_change(self):
-    #     while looking in range(4):
-      
-    def shift_change(self): # funcion para cambio de turno
+    def direccion(self):# funcion para poner la ficha en la direccion correcta
         self.creator_tokens()
         self.random_tokens()
         self.assign_shifts()
-        for self.search_in_turn in self.turn:
-            if len(self.table) == 0:
-                toke6 = self.return_token6(self.search_in_turn)
-                if self.return_token6(self.search_in_turn):
-                    self.table.append(toke6)
-                    self.search_in_turn.remove(toke6)
-                    print(self.search_in_turn)
-            elif len(self.table) > 0:
-                print('table',self.table)
-                print(self.search_in_turn)
-                self.direccion()
-            
-    
-    def direccion(self):# funcion para poner la ficha en la direccion correcta
-        enter_index = int(input('enter the index of the file to choose:'))
-        for  checks_turn in self.turn:
-            for checks_table in self.table:
-                self.index_v.append(checks_turn[enter_index])
-                print(self.index_v[0])
-                input_direccion = str(input('enter the address of the card: ').upper())
-                if input_direccion == 'L':
-                    if len(self.table) > 0:
-                        if self.index_v[0][1] == checks_table[1] or self.index_v[0][3] == checks_table[1]:
-                            if self.index_check_left(self.index_v,self.table):
-                                self.table.insert(0,self.index_check_left(self.index_v,self.table))
-                                self.index_v.pop()
-                                return self.table
-                        else:
-                            # system('cls')
-                            print('enter the index again that date does not match the table')
-                            self.index_v.pop()
-                            self.direccion()
-                            enter_index = int(input('enter the index of the file to choose:'))
-                            
-                elif input_direccion == 'R':
-                    if len(self.table) > 0:
-                        if self.index_v[0][1] == checks_table[3] or self.index_v[0][3] == checks_table[3]:
-                            if self.index_check_right(self.index_v,self.table):
-                                self.table.append(self.index_check_right(self.index_v,self.table))
-                                self.index_v.pop()
-                                return self.table
-                                
-                        else:
-                            # system('cls')
-                            print('enter the index again that date does not match the table')
-                            self.index_v.pop()
-                            self.direccion()
-                            enter_index = int(input('enter the index of the file to choose:'))
-                
-                else:
-                    # system('cls')
-                    print('enter the index again that date does not match the table')
-                    self.direccion()
+        for  self.checks_turn in self.turn:
+            print(self.checks_turn)
+            self.enter_index = int(input('enter the index of the file to choose:'))
+            self.index_v.append(self.checks_turn[self.enter_index])
+            if self.status == False:
+                self.status = True
+                self.insert_token6_in_table(self.table)
+
+            elif self.status == True:      
+                self.input_direccion = str(input('enter the address of the card: ').upper())
+                self.insert_tokes_in_table(self.table)            
                     
+                
     def  index_check_right(self,index_v,table): # funcion de chequeo de la posicion derecha
         for rec_table in table:
             for rec_turn in self.index_v:
@@ -181,10 +137,49 @@ class Board:
                 self.index_v.pop()
                 self.index_v.append(token_1)  
                 return self.index_v
-        
+          
+    def insert_token6_in_table(self,table):# funcion para agregar la primera ficha en la mesa
+        for checks_table in self.table:
+            if self.return_token6(self.checks_turn) == self.checks_turn[self.enter_index]:
+                self.table.remove('')
+                self.table.append(self.index_v[0])
+                self.index_v.pop()
+                print('table',self.table)
+                return self.table
+
+    def insert_tokes_in_table(self,table):#funcion para agregar las demas ficha en la mesa
+        for checks_table in self.table:
+            if self.input_direccion == 'L':
+                if self.index_v[0][1] == checks_table[1] or self.index_v[0][3] == checks_table[1]:
+                    if self.index_check_left(self.index_v,self.table):
+                        self.table.insert(0,self.index_check_left(self.index_v,self.table))
+                        self.index_v.pop()
+                        print('table',self.table)
+                        return self.table
+                    else:
+                        # system('cls')
+                        print('enter the index again that date does not match the table')
+                        self.index_v.pop()
+                        self.direccion()      
+            elif self.input_direccion == 'R':
+                if self.index_v[0][1] == checks_table[3] or self.index_v[0][3] == checks_table[3]:
+                    if self.index_check_right(self.index_v,self.table):
+                        self.table.append(self.index_check_right(self.index_v,self.table))
+                        self.index_v.pop()
+                        print('table',self.table)
+                        return self.table       
+                    else:
+                            # system('cls')
+                        print('enter the index again that date does not match the table')
+                        self.index_v.pop()
+                        self.direccion()
+            else:
+                    # system('cls')
+                    print('enter the index again that date does not match the table')
+                    self.direccion()                   
                                  
 domi = Board()   
-print(domi.shift_change())
+print(domi.direccion())
 
 # turn = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]
 
