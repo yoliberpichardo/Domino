@@ -1,4 +1,4 @@
-from players import *
+from player import *
 from tab_domino import Domino
 from random import *
 from os import system
@@ -22,7 +22,7 @@ class Board:
         self.game_finish = True
         self.medium = ['']
         self.players = [player1.point,player2.point,player3.point,player4.point]
-        
+
     def search(self,tab): #funcion para que no guarde fichas repetidas en la lista
         for i in range(len(self.tab_list)): 
             if self.tab_list[i].v1 == tab.v2 and self.tab_list[i].v2 == tab.v1: 
@@ -59,7 +59,7 @@ class Board:
                     self.tab_list.remove(self.token)
                     self.token = ''
           
-        return player1, player2, player3, player4
+        return player1.tokens_player, player2.tokens_player, player3.tokens_player, player4.tokens_player
         
     def find_token6(self,player): # funcion para comprobar el jugador que tenga el doble seis 
         for travels in player.tokens_player:
@@ -72,18 +72,23 @@ class Board:
             if self.find_token6(player1):
                 self.turn = [player1,player2, player3, player4]
                 self.add_player(self.turn)
+                return self.turn
             
             elif self.find_token6(player2):
                 self.turn = [player2, player3, player4, player1]
                 self.add_player(self.turn)
+                return self.turn
             
             elif self.find_token6(player3):
                 self.turn = [player3, player4, player1, player2]
                 self.add_player(self.turn)
+                return self.turn
             
             else:
                 self.turn = [player4, player1, player2, player3]
                 self.add_player(self.turn)
+                return self.turn
+        
                 
     def add_player(self,turn):
         for print_name in range(len(self.turn)):
@@ -125,6 +130,7 @@ class Board:
                                 system('cls')
                                 print('⚠ ALERT ⚠')
                                 print('⚠ to place the first chip on the table it has to be [6|6] ⚠')
+                                self.index_v.pop()
                                 self.direccionv2()
                                 
                         elif self.its_empty == False:
@@ -133,26 +139,26 @@ class Board:
                                 if len(self.index_v) == 1:
                                     self.index_v.pop()
                                     self.index_v.append(self.turn[self.turnCount].tokens_player[int(self.enter_index)])  
-                                    
-                                self.index_v.append(self.turn[self.turnCount].tokens_player[int(self.enter_index)])       
-                                self.insert_tokens_in_table(self.table) 
-                                cont_pass_player = 0
+                                else:    
+                                    self.index_v.append(self.turn[self.turnCount].tokens_player[int(self.enter_index)])       
+                                    self.insert_tokens_in_table(self.table) 
+                                    cont_pass_player = 0
                                 
                             elif len(self.table) == 1:
                                 if cont_pass_player == 1:
-                                    print('the player {} earns 25 points, the player who followed him did not go'.format(self.turnCount-1))
-                                    self.players[self.turnCount].point += 25
+                                    print('the player{} earns 25 points, the player who followed him did not go'.format(self.turnCount-1))
+                                    self.players[self.turnCount] += 25
                                     return self.players
                                 
-                            elif cont_pass_player == 3:
-                                print('the player {} wins 25 points, the other players do not call'.format(self.turnCount+1))
-                                self.players[self.turnCount].point += 25
+                            elif cont_pass_player > 2:
+                                print('the player{} wins 25 points, the other players do not call'.format(self.turnCount+1))
+                                self.players[self.turnCount] += 25
                                 return self.players
                                 
                             elif cont_pass_player > 3:
                                 self.game_finish = False
                                 print('El juego esta trancado')
-                                self.points_counter(self.turn)     
+                                self.points_counter(self.turn)    
                                 
                             else:
                                 print('the Player{}'.format(self.turnCount+1), 'is no tiene token, its up to the next player')
@@ -164,10 +170,10 @@ class Board:
     
     def points_counter(self,turn):# funcion para sumar los puntos a los jugadores
         for token in turn:
-            for point in range(len(token)): 
-                self.total_point[self.turnCount] += int(token[point][1])
-                self.total_point[self.turnCount]  += int(token[point][3])
-        return self.total_point
+            for poin in range(len(token.tokens_player)): 
+                self.players[self.turnCount] += int(token.tokens_player[poin][1])
+                self.players[self.turnCount] += int(token.tokens_player[poin][3])
+        return self.players
         
     def cheeck_table_in_turn(self,table,turn):# funcion para saber si el jugador pasa 
         cont = 0
@@ -182,7 +188,7 @@ class Board:
             return False
 
     def insert_index(self):# funcion para verificar la entrada del index
-        print('point ',self.players)
+        print('point ',[self.players[0],self.players[1],self.players[2],self.players[3]])
         print('table',self.table)
         print(self.turn[self.turnCount].print_player[0],self.turn[self.turnCount].tokens_player)
         print('index',self.len_token(self.turn[self.turnCount]))
@@ -222,8 +228,9 @@ class Board:
                     if self.index_check_left_is_True(self.index_v,self.table):
                         self.turn[self.turnCount].tokens_player.remove(self.index_v[0])
                         self.table.insert(0,self.index_check_left(self.index_v,self.table))
+                        self.enter_index = ''
                         if self.token_checker(self.turn[self.turnCount].tokens_player):
-                            self.points_counter(self.turn.tokens_player)    
+                            self.points_counter(self.turn)    
                             print('The player{} wins¡¡¡¡¡¡¡¡¡¡'.format(self.turnCount+1))
                         else:
                             self.turnCount += 1
@@ -238,14 +245,16 @@ class Board:
                     
                     else:
                         self.error_print() 
+                        self.index_v.pop
                         self.direccionv2()
                         
                 elif self.input_direccion == 'R':
                     if self.index_check_right_is_True(self.index_v,self.table):
                         self.turn[self.turnCount].tokens_player.remove(self.index_v[0])
                         self.table.append(self.index_check_right(self.index_v,self.table))
+                        self.enter_index = ''
                         if self.token_checker(self.turn[self.turnCount].tokens_player):
-                            self.points_counter(self.turn.tokens_player)    
+                            self.points_counter(self.turn)    
                             print('The player{} wins¡¡¡¡¡¡¡¡¡¡'.format(self.turnCount+1))
                         else:
                             self.turnCount += 1
@@ -259,12 +268,24 @@ class Board:
                         print('⚠⚠ this token does not go by R but if it goes by L, re-enter the coordinate ⚠⚠')                
                 
                     else:
+                        if len(self.index_v) != 0:
+                            self.index_v.pop()
+                            self.error_print()
+                            self.direccionv2()
+                            
                         self.error_print()
                         self.direccionv2()
                 
                 else:
+                    if len(self.index_v) != 0:
+                            self.index_v.pop()
+                            self.error_print()
+                            self.enter_index = ''
+                            self.direccionv2()
+                            
                     self.error_print()
                     self.index_v.pop()
+                    self.enter_index = ''
                     self.direccionv2()
                          
     def error_print(self): 
@@ -342,12 +363,12 @@ class Board:
             return self.table                                        
     
     def run_table(self): 
-        for poin in self.total_point:
+        for poin in self.players:
             print(poin)
-                         
+                       
 domi = Board()
 domi.creator_tokens()
 domi.random_tokens()
 domi.assign_shifts_start()
-print(domi.direccionv2())
-domi.run_table()
+domi.direccionv2()
+# domi.run_table()
