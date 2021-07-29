@@ -1,4 +1,4 @@
-from board import *
+from table import *
 class Engine:
     def __init__(self):
         self.exit_game = False
